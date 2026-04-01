@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Garden Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style2.css">
+</head>
+<body>
+
+    <div class="app">
+        <!-- Боковая панель (Sidebar) -->
+        <aside class="sidebar">
+            <div class="logo">SmartGarden</div>
+            <nav class="nav">
+                <div class="nav-item active" onclick="showPage('page1', this)">Обзор</div>
+                <div class="nav-item" onclick="showPage('page2', this)">Устройства</div>
+                <div class="nav-item" onclick="showPage('page3', this)">Аналитика</div>
+            </nav>
+            <button class="add-btn">Добавить узел</button>
+        </aside>
+
+        <!-- Основной контент -->
+        <main class="main">
+            
+            <!-- СТРАНИЦА 1 (Обзор) -->
+            <section id="page1" class="section active-section">
+                <div class="grid-1">
+                    <div class="card sun-graph">
+                        <div class="card-title">График освещенности</div>
+                        <div class="placeholder-text">Инсоляция за 24 часа</div>
+                    </div>
+                    <div class="card timers">
+                        <div class="card-title">Таймеры и будильники</div>
+                        <div class="timer-line"></div>
+                        <div class="timer-line"></div>
+                        <div class="timer-line"></div>
+                        <div class="timer-line"></div>
+                    </div>
+                    <div class="card camera-tp">
+                        <div class="card-title">Камеры / Техподдержка</div>
+                        <div class="placeholder-text">Live поток #01</div>
+                    </div>
+                    <div class="card add-widget-card">
+                        <span>+ Добавить виджет</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СТРАНИЦА 2 (Мониторинг) -->
+            <section id="page2" class="section">
+                <div class="grid-2">
+                    <div class="card widget-with-scale">
+                        <div class="widget-content">Почва А</div>
+                        <div class="scale-area"><div class="bar" style="height: 60%"></div></div>
+                    </div>
+                    <div class="card widget-with-scale">
+                        <div class="widget-content">Почва Б</div>
+                        <div class="scale-area"><div class="bar" style="height: 40%"></div></div>
+                    </div>
+                    <div class="card widget-with-scale">
+                        <div class="widget-content">Резервуар</div>
+                        <div class="scale-area"><div class="bar" style="height: 85%"></div></div>
+                    </div>
+                    <div class="card widget-with-scale">
+                        <div class="widget-content">Запись с камеры растения</div>
+                        <div class="scale-area"><div class="bar" style="height: 20%"></div></div>
+                    </div>
+                    <div class="card wide-footer">
+                        <div class="card-title">Журнал событий системы</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СТРАНИЦА 3 (Аналитика/Розовая) -->
+            <section id="page3" class="section">
+                <div class="grid-3">
+                    <div class="pink-stack">
+                        <div class="card pink-box">Анализ #1</div>
+                        <div class="card pink-box">Анализ #2</div>
+                        <div class="card pink-box">Анализ #3</div>
+                    </div>
+                    <div class="pink-right">
+                        <div class="card pink-bar">Статистика недели</div>
+                        <div class="card pink-bar" style="height: 150px;">История изменений</div>
+                        <div class="pink-footer">
+                            <div class="card pink-square">Блок А</div>
+                            <div class="card pink-square">Блок Б</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function showPage(pageId, element) {
+            // Скрыть все секции
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+            // Показать выбранную
+            document.getElementById(pageId).classList.add('active-section');
+            // Переключить активный пункт меню
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f2f4f8;
+  color: #2c3e4e;
+}
+
+/* LAYOUT */
+.app {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e2e6ea;
+  padding: 32px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-item {
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 500;
+  color: #5a6e7c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #edf2f7;
+  color: #2c3e4e;
+}
+
+.nav-item.active {
+  background: #e6edf4;
+  color: #2c6e9e;
+  font-weight: 600;
+}
+
+.add-btn {
+  background: #ccd7e4;
+  color: #2c3e4e;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 24px;
+}
+
+.add-btn:hover {
+  background: #b8c4d2;
+}
+
+.add-btn.secondary {
+  background: #e9edf2;
+  color: #5a6e7c;
+  margin-top: 16px;
+}
+
+.add-btn.small {
+  padding: 6px 12px;
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+/* MAIN */
+.main {
+  background: #f9fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 32px;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* общие карточки */
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* Секции (переключаемые) */
+.section {
+  display: none;
+  animation: fade 0.2s ease;
+}
+
+.section.active-section {
+  display: block;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Дашборд --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+.main-area {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.camera {
+  background: #d9e2ec;
+  border-radius: 24px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #2c3e4e;
+  font-size: 18px;
+  text-align: center;
+  background-image: linear-gradient(145deg, #d9e2ec 0%, #cbd7e4 100%);
+}
+
+.previews {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.preview {
+  background: #eef2f6;
+  border-radius: 20px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5a6e7c;
+  font-weight: 500;
+}
+
+.status-scale {
+  background: white;
+  border-radius: 20px;
+  padding: 16px 20px;
+}
+
+.status-scale h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #2c3e4e;
+}
+
+.scale-row {
+  display: flex;
+  gap: 12px;
+}
+
+.scale-item {
+  flex: 1;
+  height: 44px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: white;
+}
+
+.good { background: #7fb07f; }
+.normal { background: #e0b06e; }
+.bad { background: #c97d7d; }
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sensor-block h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2c3e4e;
+}
+
+.sensor-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 8px 0 4px;
+  color: #2c3e4e;
+}
+
+.sensor-hint {
+  font-size: 13px;
+  color: #7f8c9a;
+}
+
+.water-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0 8px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #bcc9d4;
+  transition: 0.2s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #6c8ebf;
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* --- Полки --- */
+.shelves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shelf-row {
+  background: white;
+  border-radius: 20px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.shelf-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #2c3e4e;
+}
+
+.shelf-meta {
+  display: flex;
+  gap: 20px;
+  color: #7f8c9a;
+  font-size: 13px;
+}
+
+.badge {
+  padding: 5px 12px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badge-success {
+  background: #e0f0e0;
+  color: #3b6e3b;
+}
+
+.badge-warning {
+  background: #fef0db;
+  color: #b47c2e;
+}
+
+/* --- Вода --- */
+.water-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.water-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.water-level {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 12px 0;
+  color: #2c3e4e;
+}
+
+progress {
+  width: 100%;
+  height: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+progress::-webkit-progress-bar { background-color: #e2e8f0; border-radius: 10px; }
+progress::-webkit-progress-value { background-color: #6c8ebf; border-radius: 10px; }
+
+.schedule-item {
+  margin: 14px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid #edf2f7;
+  color: #4a627a;
+}
+
+/* Заглушки для света и заболеваний */
+.placeholder-card {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.placeholder-card h2 {
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #2c3e4e;
+}
+
+.placeholder-card p {
+  color: #7f8c9a;
+  margin-bottom: 20px;
+}
+
+/* ========== КАМЕРЫ ========== */
+.cameras-section {
+  background: #f9fafc;
+  border-top: 1px solid #e2e6ea;
+  padding: 48px 32px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.cameras-container {
+  max-width: 1440px;
+  width: 100%;
+}
+
+.cameras-header {
+  margin-bottom: 32px;
+}
+
+.cameras-header h2 {
+  width: 442px;
+  height: 46px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e4e;
+  line-height: 46px;
+}
+
+.cameras-layout {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.cameras-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.cameras-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.camera-card {
+  width: 531px;
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.camera-card:hover {
+  transform: translateY(-4px);
+}
+
+.camera-preview {
+  width: 531px;
+  height: 296px;
+  background: #d9e2ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #2c3e4e;
+  background-image: linear-gradient(145deg, #d9e2ec 0%, #cbd7e4 100%);
+}
+
+.camera-title {
+  padding: 18px 20px;
+  font-weight: 500;
+  border-top: 1px solid #edf2f7;
+  background: white;
+  font-size: 16px;
+}
+
+.cameras-side {
+  width: 292px;
+  height: 821px;
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  flex-shrink: 0;
+}
+
+.cameras-side h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2c3e4e;
+}
+
+.side-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 14px;
+  color: #5a6e7c;
+}
+
+.side-item:last-child {
+  border-bottom: none;
+}
+
+/* ========== ПОЛИВ ========== */
+.irrigation-section {
+  background: #f9fafc;
+  border-top: 1px solid #e2e6ea;
+  padding: 48px 32px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.irrigation-container {
+  max-width: 1440px;
+  width: 100%;
+}
+
+.irrigation-header {
+  margin-bottom: 32px;
+}
+
+.irrigation-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e4e;
+}
+
+.irrigation-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.irrigation-card {
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: transform 0.2s;
+}
+
+.irrigation-card:hover {
+  transform: translateY(-4px);
+}
+
+.sprinkler-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sprinkler-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.schedule-card h3,
+.time-card h3,
+.water-temp-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.schedule-time {
+  padding: 8px 0;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 14px;
+}
+
+.time-control {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-row label {
+  font-size: 14px;
+  color: #5a6e7c;
+}
+
+.time-row input[type="time"],
+.time-row input[type="number"] {
+  padding: 6px 10px;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.time-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.water-temp-card {
+  text-align: center;
+}
+
+.temp-value {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 20px 0 8px;
+}
+
+.temp-hint {
+  font-size: 13px;
+  color: #7f8c9a;
+}
+
+.temp-status {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b6e3b;
+  background: #e0f0e0;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Компактный pH внутри карточки температуры */
+.ph-compact {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #edf2f7;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  color: #5a6e7c;
+}
+
+.ph-compact .ph-label {
+  font-weight: 500;
+}
+
+.ph-compact .ph-value {
+  font-weight: 700;
+  font-size: 18px;
+  color: #2c3e4e;
+}
+
+.ph-compact .ph-hint {
+  font-size: 12px;
+  color: #7f8c9a;
+}
+
+/* Адаптивность для камер и полива */
+@media (max-width: 1440px) {
+  .cameras-grid {
+    justify-content: center;
+  }
+  .cameras-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cameras-side {
+    width: 100%;
+    max-width: 531px;
+    height: auto;
+    margin-top: 32px;
+  }
+  .irrigation-grid {
+    justify-content: center;
+  }
+  .irrigation-card {
+    width: 100% !important;
+    max-width: 531px;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    flex-direction: row;
+    padding: 12px 16px;
+    border-top: 1px solid #e2e6ea;
+    z-index: 10;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+  }
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .add-btn {
+    display: none;
+  }
+  .content {
+    padding: 20px;
+  }
+  .dashboard-grid,
+  .water-grid {
+    grid-template-columns: 1fr;
+  }
+  .cameras-section,
+  .irrigation-section {
+    padding: 32px 20px;
+  }
+  .camera-card,
+  .camera-preview {
+    width: 100%;
+    max-width: 531px;
+    height: auto;
+  }
+  .camera-preview {
+    aspect-ratio: 531 / 296;
+  }
+  .cameras-header h2 {
+    width: auto;
+    height: auto;
+  }
+  .irrigation-header h2 {
+    font-size: 20px;
+  }
+}
