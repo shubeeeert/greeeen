@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Garden Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">SmartGarden</div>
+            <nav class="nav">
+                <button class="nav-item active" onclick="showPage('page1', this)">Обзор</button>
+                <button class="nav-item" onclick="showPage('page2', this)">Устройства</button>
+                <button class="nav-item" onclick="showPage('page3', this)">Аналитика</button>
+            </nav>
+            <button class="add-btn" onclick="openAddNode()">Добавить узел</button>
+        </aside>
+
+        <main class="main">
+            
+            <section id="page1" class="section active-section">
+                <div class="grid-container overview-grid">
+                    <div class="card sun-graph full-width">
+                        <div class="card-title">График освещенности</div>
+                        <div class="placeholder-text">Инсоляция за 24 часа</div>
+                    </div>
+                    
+                    <div class="card timers">
+                        <div class="card-title">Таймеры</div>
+                        <div class="timer-line"></div>
+                        <div class="timer-line"></div>
+                        <div class="timer-line"></div>
+                    </div>
+
+                    <div class="card camera-tp">
+                        <div class="card-title">Камеры</div>
+                        <div class="video-box">
+                            <img src="stream.jpg" alt="Прямая трансляция стеллажа А1" class="cam-img">
+                            <p class="placeholder-text">Live поток #01</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page2" class="section">
+                <div class="grid-container devices-grid">
+                    <div class="card widget-with-scale">
+                        <div class="widget-content">Система полива</div>
+                        <div class="scale-area">
+                            <progress id="water-level" max="100" value="65">65%</progress>
+                        </div>
+                    </div>
+                    
+                    <div class="card wide-footer">
+                        <div class="card-title">Журнал событий</div>
+                        <div class="log-entry">Автополив включен: 12:00</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page3" class="section">
+                <div class="grid-container pink-grid">
+                    <div class="card pink-box">Анализ #1</div>
+                    <div class="card pink-box">Анализ #2</div>
+                    <div class="card pink-bar full-width">Статистика недели</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function showPage(pageId, element) {
+            // Скрыть все секции
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+            // Показать выбранную
+            document.getElementById(pageId).classList.add('active-section');
+            // Переключить активный пункт меню
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Защита кнопок (Безопасность)
+        function openAddNode() {
+            const btn = document.querySelector('.add-btn');
+            btn.disabled = true; // Блокировка от спам-кликов
+            console.log("Запрос на добавление узла...");
+            setTimeout(() => { btn.disabled = false; }, 1000);
+        }
+    </script>
+</body>
+</html>

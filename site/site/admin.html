@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenEye AI</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="hero plant">
+    <img src="images/plants.png" class="resize">
+  </div>
+
+  <div class="class wrapper">
+    <div class="login">
+      <div><a href="login.html">Вход</a></div>
+      <div>Администратор</div>
+    </div>
+    <form action="">
+      <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+      <div class="input-box">
+        <input type="text" placeholder="Имя администратора" required>
+      </div>
+      <div class="input-box">
+        <input type="password" placeholder="Ключ" required>
+      </div>
+      <div class="remember">
+        <label for=""><input type="checkbox">Запомнить меня</label>
+        <a href="#">Забыли ключ?</a>
+      </div>
+
+      <button type="submit" class="btn">Войти</button>
+
+
+</body>
+</html>
