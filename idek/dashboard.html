@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GreenEye AI — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: #f0f2ee;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+
+    body.ready { opacity: 1; }
+
+    /* ════════════════════════════════════════
+       APP SHELL
+    ════════════════════════════════════════ */
+    .app { display: flex; height: 100vh; width: 100%; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 200px;
+      min-width: 180px;
+      background: #1e2420;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.8rem 1rem 1.5rem;
+      flex-shrink: 0;
+      transition: transform 0.28s ease;
+      overflow: hidden;
+    }
+
+    .sidebar-logo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #7fc950;
+      margin-bottom: 2rem;
+      letter-spacing: 0.03em;
+      padding: 0 0.4rem;
+      white-space: nowrap;
+    }
+
+    .nav { display: flex; flex-direction: column; gap: 0.3rem; }
+
+    .nav-item {
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      color: #8fa888;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      text-transform: lowercase;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover  { background: #2c352a; color: #c5dbb8; }
+    .nav-item.active { background: #3a4e34; color: #a8d87e; font-weight: 600; }
+
+    .sidebar-bottom { display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .sidebar-user {
+      font-size: 0.78rem;
+      color: #6a8060;
+      padding: 0 0.4rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .add-btn {
+      background: #3a4e34;
+      color: #a8d87e;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.82rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+      text-align: left;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .add-btn:hover     { background: #4a6242; }
+    .add-btn.secondary { background: #555; color: #ccc; margin-top: 0.8rem; }
+    .add-btn.small     { padding: 0.5rem 0.8rem; font-size: 0.8rem; margin-top: 0.6rem; width: auto; }
+
+    .logout-btn {
+      background: transparent;
+      color: #8fa888;
+      border: 1px solid #3a4e34;
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.82rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      text-align: left;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .logout-btn:hover { background: #2c352a; color: #c5dbb8; }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #f0f2ee;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content { padding: 1.8rem; flex: 1; }
+
+    /* ── Sections ── */
+    .section { display: none; }
+    .section.active-section { display: block; }
+
+    /* ════════════════════════════════════════
+       DASHBOARD SECTION
+    ════════════════════════════════════════ */
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 280px; gap: 1.2rem; }
+    .main-area      { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .camera {
+      background: #2c352a;
+      color: #8fa888;
+      border-radius: 16px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .previews { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .preview {
+      background: #dde3d8;
+      border-radius: 14px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8fa888;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .status-scale { background: #fff; border-radius: 16px; padding: 1.1rem 1.3rem; }
+    .status-scale h3 { font-size: 0.9rem; color: #444; margin-bottom: 0.8rem; font-weight: 600; }
+    .scale-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+    .scale-item {
+      flex: 1;
+      min-width: 80px;
+      padding: 0.55rem 0;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .scale-item.good   { background: #d6edbe; color: #4a7c20; }
+    .scale-item.normal { background: #ffefc0; color: #9a7200; }
+    .scale-item.bad    { background: #ffd0cc; color: #b03020; }
+
+    .right-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+    .card { background: #fff; border-radius: 16px; padding: 1rem 1.2rem; }
+
+    .sensor-block h3  { font-size: 0.88rem; color: #555; font-weight: 600; margin-bottom: 0.3rem; }
+    .sensor-value     { font-size: 1.6rem; font-weight: 700; color: #222; }
+    .sensor-hint      { font-size: 0.75rem; color: #999; margin-top: 0.2rem; }
+
+    .water-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.3rem;
+      font-size: 0.82rem;
+      color: #444;
+      font-weight: 500;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .switch .slider {
+      position: absolute;
+      inset: 0;
+      background: #7a9e3f;
+      border-radius: 34px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+
+    .switch .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.25s;
+    }
+
+    .switch input:not(:checked) + .slider         { background: #bbb; }
+    .switch input:checked       + .slider::before { transform: translateX(22px); }
+
+    /* ════════════════════════════════════════
+       SHELVES SECTION
+    ════════════════════════════════════════ */
+    .shelves-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .shelf-row {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .shelf-title   { font-size: 0.95rem; font-weight: 600; color: #222; margin-bottom: 0.4rem; }
+    .shelf-meta    { display: flex; gap: 1rem; font-size: 0.8rem; color: #777; flex-wrap: wrap; }
+    .shelf-actions { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+
+    .badge {
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success { background: #d6edbe; color: #4a7c20; }
+    .badge-warning { background: #ffefc0; color: #9a7200; }
+    .badge-danger  { background: #ffd0cc; color: #b03020; }
+
+    .delete-btn {
+      background: none;
+      border: 1.5px solid #f0c0c0;
+      color: #c0392b;
+      border-radius: 8px;
+      padding: 0.3rem 0.65rem;
+      font-size: 0.78rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+      white-space: nowrap;
+    }
+
+    .delete-btn:hover { background: #ffd0cc; }
+
+    /* ════════════════════════════════════════
+       WATER SECTION
+    ════════════════════════════════════════ */
+    .irrigation-container { padding: 0; }
+    .irrigation-header h2 { font-size: 1.2rem; font-weight: 700; color: #222; margin-bottom: 1.2rem; }
+    .irrigation-grid { display: flex; flex-wrap: wrap; gap: 1.2rem; }
+
+    .irrigation-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.2rem 1.4rem;
+      flex: 1 1 260px;
+    }
+
+    .irrigation-card h3 { font-size: 0.9rem; font-weight: 600; color: #444; margin-bottom: 0.8rem; }
+
+    .schedule-list { display: flex; flex-direction: column; gap: 0.55rem; }
+
+    .schedule-time {
+      background: #f4f7f0;
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.85rem;
+      color: #444;
+    }
+
+    .time-control { display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .time-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #555;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .time-row input[type="time"],
+    .time-row input[type="number"] {
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 0.35rem 0.6rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      color: #222;
+      max-width: 140px;
+    }
+
+    .time-row input:focus { border-color: #7a9e3f; }
+
+    .temp-value  { font-size: 2rem; font-weight: 700; color: #2e6e2e; margin: 0.4rem 0 0.1rem; }
+    .temp-hint   { font-size: 0.78rem; color: #999; }
+    .temp-status { font-size: 0.85rem; font-weight: 600; color: #4a7c20; margin-top: 0.5rem; }
+
+    .ph-compact {
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .ph-label { color: #666; }
+    .ph-value { font-weight: 700; color: #222; }
+    .ph-hint  { color: #aaa; font-size: 0.78rem; }
+
+    progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      appearance: none;
+    }
+
+    progress::-webkit-progress-bar   { background: #eee; border-radius: 4px; }
+    progress::-webkit-progress-value { background: #7a9e3f; border-radius: 4px; }
+
+    /* ════════════════════════════════════════
+       LIGHT SECTION
+    ════════════════════════════════════════ */
+    .light-grid { display: flex; flex-wrap: wrap; gap: 1.2rem; }
+
+    .light-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.3rem 1.5rem;
+      flex: 1 1 260px;
+    }
+
+    .light-card h3 { font-size: 0.95rem; font-weight: 700; color: #333; margin-bottom: 1rem; }
+
+    .light-schedule { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .light-sched-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f4f7f0;
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.84rem;
+      color: #444;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .light-sched-row .ls-time  { font-weight: 600; color: #2e6e2e; }
+    .light-sched-row .ls-label { color: #777; }
+
+    .intensity-wrap { display: flex; flex-direction: column; gap: 0.8rem; }
+
+    .intensity-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #444;
+      gap: 0.6rem;
+    }
+
+    .intensity-row span:last-child { font-weight: 700; color: #2e6e2e; min-width: 36px; text-align: right; }
+
+    input[type="range"] { flex: 1; accent-color: #7a9e3f; cursor: pointer; }
+
+    .mode-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    .mode-btn {
+      flex: 1 1 calc(50% - 0.3rem);
+      padding: 0.7rem 0.5rem;
+      border-radius: 12px;
+      border: 2px solid #ddd;
+      background: #f5f5f5;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .mode-btn:hover  { border-color: #7a9e3f; color: #4a7c20; background: #f0f7e6; }
+    .mode-btn.active { border-color: #7a9e3f; color: #fff; background: #7a9e3f; }
+
+    .light-add-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 0.9rem;
+    }
+
+    .light-add-row input {
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 0.4rem 0.7rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      color: #222;
+    }
+
+    .light-add-row input[type="text"] { flex: 1; min-width: 80px; }
+    .light-add-row input:focus        { border-color: #7a9e3f; }
+
+    /* ════════════════════════════════════════
+       DISEASES SECTION
+    ════════════════════════════════════════ */
+    .diseases-grid { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .diseases-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .diseases-header h2 { font-size: 1.2rem; font-weight: 700; color: #222; }
+
+    .sub-card { background: #fff; border-radius: 16px; padding: 1.2rem 1.4rem; }
+    .sub-card h3 { font-size: 0.95rem; font-weight: 700; color: #333; margin-bottom: 0.9rem; }
+
+    .alerts-list { display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .alert-item {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1rem 1.3rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      border-left: 4px solid #ccc;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .alert-item.high   { border-color: #e74c3c; }
+    .alert-item.medium { border-color: #f39c12; }
+    .alert-item.low    { border-color: #27ae60; }
+
+    .alert-icon  { font-size: 1.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .alert-body  { flex: 1; }
+    .alert-title { font-size: 0.9rem; font-weight: 700; color: #222; margin-bottom: 0.2rem; }
+    .alert-desc  { font-size: 0.8rem; color: #777; line-height: 1.5; }
+    .alert-meta  { font-size: 0.75rem; color: #aaa; margin-top: 0.3rem; }
+
+    .alert-badge {
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    .alert-badge.high   { background: #ffd0cc; color: #b03020; }
+    .alert-badge.medium { background: #ffefc0; color: #9a7200; }
+    .alert-badge.low    { background: #d6edbe; color: #4a7c20; }
+
+    .rec-list { display: flex; flex-direction: column; gap: 0.55rem; }
+
+    .rec-item {
+      background: #f9faf7;
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .rec-item .rec-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .rec-item strong    { color: #222; }
+
+    .history-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+    .history-table th {
+      text-align: left;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #eee;
+    }
+
+    .history-table td {
+      padding: 0.65rem 0.9rem;
+      color: #444;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table .status-done    { color: #27ae60; font-weight: 600; }
+    .history-table .status-pending { color: #f39c12; font-weight: 600; }
+
+    /* ════════════════════════════════════════
+       CAMERAS SECTION
+    ════════════════════════════════════════ */
+    .cameras-section {
+      background: #e6e9e2;
+      border-top: 1px solid #d8dcd4;
+      padding: 1.5rem 1.8rem 2rem;
+    }
+
+    .cameras-header h2 { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 1rem; }
+
+    .cameras-layout { display: flex; gap: 1.4rem; align-items: flex-start; flex-wrap: wrap; }
+    .cameras-main   { flex: 1; min-width: 0; }
+
+    .cameras-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .camera-card    { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .camera-preview {
+      background: #2c352a;
+      border-radius: 14px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6a8060;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .camera-title { font-size: 0.78rem; color: #666; font-weight: 500; text-align: center; }
+
+    .cameras-side {
+      width: 220px;
+      flex-shrink: 0;
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.1rem 1.3rem;
+    }
+
+    .cameras-side h3 { font-size: 0.88rem; font-weight: 600; color: #444; margin-bottom: 0.8rem; }
+
+    .side-item {
+      font-size: 0.8rem;
+      color: #666;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .side-item:last-child { border-bottom: none; }
+
+    /* ════════════════════════════════════════
+       MODAL
+    ════════════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .modal h3 { font-size: 1.1rem; font-weight: 700; color: #222; }
+
+    .modal .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .modal .form-group label { font-size: 0.82rem; color: #555; font-weight: 500; }
+
+    .modal .form-group input,
+    .modal .form-group select {
+      background: #f5f5f5;
+      border: 1.5px solid #ddd;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.92rem;
+      font-family: 'Inter', sans-serif;
+      color: #222;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .modal .form-group input:focus,
+    .modal .form-group select:focus { border-color: #7a9e3f; }
+
+    .modal-actions { display: flex; gap: 0.7rem; justify-content: flex-end; }
+
+    .btn-cancel {
+      background: #f0f0f0;
+      color: #555;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 1.2rem;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+
+    .btn-cancel:hover { background: #e0e0e0; }
+
+    .btn-confirm {
+      background: #7a9e3f;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 1.2rem;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+
+    .btn-confirm:hover { background: #6b8c35; }
+
+    /* ════════════════════════════════════════
+       HAMBURGER
+    ════════════════════════════════════════ */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 999;
+      background: #1e2420;
+      border: none;
+      border-radius: 10px;
+      padding: 0.5rem 0.7rem;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #7fc950;
+      border-radius: 2px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .right-panel    { display: grid; grid-template-columns: repeat(2, 1fr); }
+      .cameras-grid   { grid-template-columns: repeat(2, 1fr); }
+      .cameras-side   { width: 100%; flex-basis: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        height: 100vh;
+        z-index: 200;
+        transform: translateX(-100%);
+        width: 220px;
+        min-width: 220px;
+      }
+
+      .sidebar.open           { transform: translateX(0); }
+      .sidebar-overlay.active { display: block; }
+
+      .content { padding: 1rem; padding-top: 4rem; }
+
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .right-panel    { grid-template-columns: 1fr; }
+      .camera         { height: 160px; font-size: 0.88rem; }
+      .previews       { gap: 0.7rem; }
+      .preview        { height: 85px; font-size: 0.78rem; }
+
+      .irrigation-card { flex: 1 1 100%; }
+      .light-card      { flex: 1 1 100%; }
+
+      .cameras-section { padding: 1.2rem 1rem 1.5rem; }
+      .cameras-grid    { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+      .camera-preview  { height: 100px; font-size: 0.78rem; }
+      .cameras-side    { width: 100%; }
+
+      .shelf-row    { flex-direction: column; align-items: flex-start; }
+      .sensor-value { font-size: 1.35rem; }
+
+      .history-table th,
+      .history-table td { padding: 0.45rem 0.5rem; font-size: 0.75rem; }
+    }
+
+    @media (max-width: 400px) {
+      .cameras-grid { grid-template-columns: 1fr; }
+      .previews     { grid-template-columns: 1fr; }
+      .right-panel  { grid-template-columns: 1fr; }
+      .scale-row    { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hamburger -->
+  <button class="hamburger" id="hamburgerBtn" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Sidebar overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="sidebar">
+      <div>
+        <div class="sidebar-logo">🌿 GreenEye AI</div>
+        <nav class="nav">
+          <div class="nav-item active" data-section="dashboard">дашборд</div>
+          <div class="nav-item" data-section="shelves">полки</div>
+          <div class="nav-item" data-section="water">вода</div>
+          <div class="nav-item" data-section="light">свет</div>
+          <div class="nav-item" data-section="diseases">заболевания</div>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-user" id="sidebarUser"></div>
+        <button class="add-btn" id="addShelfBtn">+ добавить полку</button>
+        <button class="logout-btn" id="logoutBtn">⬅ выйти</button>
+      </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <div class="main">
+      <div class="content">
+
+        <!-- ДАШБОРД -->
+        <div id="dashboard" class="section active-section">
+          <div class="dashboard-grid">
+            <div class="main-area">
+              <div class="camera">КАМЕРА ШКАФ 1</div>
+              <div class="previews">
+                <div class="preview">Превью камеры</div>
+                <div class="preview">Превью камеры</div>
+              </div>
+              <div class="status-scale">
+                <h3>Общее состояние системы</h3>
+                <div class="scale-row">
+                  <div class="scale-item good">Хорошо</div>
+                  <div class="scale-item normal">Нормально</div>
+                  <div class="scale-item bad">Плохо</div>
+                </div>
+              </div>
+            </div>
+            <div class="right-panel">
+              <div class="card sensor-block">
+                <h3>Температура</h3>
+                <div class="sensor-value">24.6 °C</div>
+                <div class="sensor-hint">оптимально: 22–26 °C</div>
+              </div>
+              <div class="card sensor-block">
+                <h3>Влажность</h3>
+                <div class="sensor-value">68%</div>
+                <div class="sensor-hint">норма: 60–75%</div>
+              </div>
+              <div class="card sensor-block">
+                <h3>pH почвы</h3>
+                <div class="sensor-value">6.2</div>
+                <div class="sensor-hint">идеально: 6.0–6.8</div>
+              </div>
+              <div class="card sensor-block">
+                <h3>Подача воды</h3>
+                <div class="water-toggle-row">
+                  <span>Автоматический полив</span>
+                  <label class="switch">
+                    <input type="checkbox" id="waterSwitch" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="sensor-hint">
+                  <span id="waterState">Включён</span> • следующий цикл: через 2 ч
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ПОЛКИ -->
+        <div id="shelves" class="section">
+          <div class="shelves-list" id="shelvesList"></div>
+        </div>
+
+        <!-- ВОДА -->
+        <div id="water" class="section">
+          <div class="irrigation-container">
+            <div class="irrigation-header"><h2>Управление поливом</h2></div>
+            <div class="irrigation-grid">
+              <div class="irrigation-card">
+                <h3>График полива</h3>
+                <div class="schedule-list">
+                  <div class="schedule-time">08:00 — 15 мин (стеллаж A)</div>
+                  <div class="schedule-time">14:00 — 20 мин (стеллаж B)</div>
+                  <div class="schedule-time">19:30 — 10 мин (стеллаж C)</div>
+                </div>
+              </div>
+              <div class="irrigation-card">
+                <h3>Настройка по времени</h3>
+                <div class="time-control">
+                  <div class="time-row">
+                    <label>Время начала:</label>
+                    <input type="time" value="08:00">
+                  </div>
+                  <div class="time-row">
+                    <label>Длительность (мин):</label>
+                    <input type="number" value="15" min="0" max="120">
+                  </div>
+                  <div class="time-row">
+                    <label>Повторять каждый день:</label>
+                    <input type="checkbox">
+                  </div>
+                  <button class="add-btn small">Сохранить</button>
+                </div>
+              </div>
+              <div class="irrigation-card">
+                <h3>Температура воды</h3>
+                <div class="temp-value">22.5 °C</div>
+                <div class="temp-hint">оптимально: 20–24 °C</div>
+                <progress value="65" max="100" style="margin-top:20px;"></progress>
+                <div class="temp-status">Норма</div>
+                <div class="ph-compact">
+                  <span class="ph-label">pH почвы:</span>
+                  <span class="ph-value">6.2</span>
+                  <span class="ph-hint">(идеально 6.0–6.8)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- СВЕТ -->
+        <div id="light" class="section">
+          <h2 style="font-size:1.2rem;font-weight:700;color:#222;margin-bottom:1.2rem;">Управление освещением</h2>
+          <div class="light-grid">
+
+            <div class="light-card">
+              <h3>📅 График освещения</h3>
+              <div class="light-schedule" id="lightScheduleList">
+                <div class="light-sched-row">
+                  <span class="ls-time">06:00 – 10:00</span>
+                  <span class="ls-label">Утреннее пробуждение</span>
+                  <span class="badge badge-success">активно</span>
+                </div>
+                <div class="light-sched-row">
+                  <span class="ls-time">10:00 – 18:00</span>
+                  <span class="ls-label">Дневной максимум</span>
+                  <span class="badge badge-success">активно</span>
+                </div>
+                <div class="light-sched-row">
+                  <span class="ls-time">18:00 – 22:00</span>
+                  <span class="ls-label">Вечернее затухание</span>
+                  <span class="badge badge-warning">ожидание</span>
+                </div>
+                <div class="light-sched-row">
+                  <span class="ls-time">22:00 – 06:00</span>
+                  <span class="ls-label">Ночной отдых</span>
+                  <span class="badge badge-danger">выкл</span>
+                </div>
+              </div>
+              <div class="light-add-row">
+                <input type="time" id="lsFrom" value="08:00">
+                <input type="time" id="lsTo"   value="10:00">
+                <input type="text" id="lsLabel" placeholder="Название">
+                <button class="add-btn small" id="addLightSched">+ добавить</button>
+              </div>
+            </div>
+
+            <div class="light-card">
+              <h3>🔆 Интенсивность по зонам</h3>
+              <div class="intensity-wrap" id="intensityWrap">
+                <div class="intensity-row">
+                  <span>Стеллаж A</span>
+                  <input type="range" min="0" max="100" value="80" oninput="updateIntensity(this)">
+                  <span>80%</span>
+                </div>
+                <div class="intensity-row">
+                  <span>Стеллаж B</span>
+                  <input type="range" min="0" max="100" value="65" oninput="updateIntensity(this)">
+                  <span>65%</span>
+                </div>
+                <div class="intensity-row">
+                  <span>Стеллаж C</span>
+                  <input type="range" min="0" max="100" value="50" oninput="updateIntensity(this)">
+                  <span>50%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="light-card">
+              <h3>⚙️ Режим освещения</h3>
+              <div class="mode-grid" id="modeGrid">
+                <button class="mode-btn active" data-mode="auto">🤖 Авто</button>
+                <button class="mode-btn" data-mode="veg">🌿 Вегетация</button>
+                <button class="mode-btn" data-mode="bloom">🌸 Цветение</button>
+                <button class="mode-btn" data-mode="seedling">🌱 Рассада</button>
+                <button class="mode-btn" data-mode="night">🌙 Ночь</button>
+                <button class="mode-btn" data-mode="manual">🔧 Вручную</button>
+              </div>
+              <div style="margin-top:1rem;padding:0.8rem;background:#f4f7f0;border-radius:10px;font-size:0.82rem;color:#555;line-height:1.6;" id="modeDesc">
+                <strong>Авто:</strong> ИИ подбирает оптимальный режим на основе данных датчиков и фазы роста растений.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ЗАБОЛЕВАНИЯ -->
+        <div id="diseases" class="section">
+          <div class="diseases-grid">
+            <div class="diseases-header">
+              <h2>Диагностика заболеваний</h2>
+              <span class="badge badge-danger">3 активных тревоги</span>
+            </div>
+
+            <div class="sub-card">
+              <h3>🚨 Список тревог</h3>
+              <div class="alerts-list">
+                <div class="alert-item high">
+                  <div class="alert-icon">🦠</div>
+                  <div class="alert-body">
+                    <div class="alert-title">Мучнистая роса — Стеллаж B</div>
+                    <div class="alert-desc">Обнаружены характерные белые пятна на листьях. Требуется немедленная обработка фунгицидом.</div>
+                    <div class="alert-meta">Обнаружено: сегодня, 09:14 · Камера 2</div>
+                  </div>
+                  <span class="alert-badge high">Высокий</span>
+                </div>
+                <div class="alert-item medium">
+                  <div class="alert-icon">🐛</div>
+                  <div class="alert-body">
+                    <div class="alert-title">Тля — Стеллаж A, верхний ярус</div>
+                    <div class="alert-desc">Зафиксировано скопление насекомых на обороте листьев базилика.</div>
+                    <div class="alert-meta">Обнаружено: вчера, 16:42 · Камера 1</div>
+                  </div>
+                  <span class="alert-badge medium">Средний</span>
+                </div>
+                <div class="alert-item low">
+                  <div class="alert-icon">💧</div>
+                  <div class="alert-body">
+                    <div class="alert-title">Хлороз листьев — Стеллаж C</div>
+                    <div class="alert-desc">Пожелтение листьев, вероятно, вызвано дефицитом железа или азота.</div>
+                    <div class="alert-meta">Обнаружено: 2 дня назад · Камера 3</div>
+                  </div>
+                  <span class="alert-badge low">Низкий</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sub-card">
+              <h3>💡 Рекомендации</h3>
+              <div class="rec-list">
+                <div class="rec-item">
+                  <span class="rec-icon">🧪</span>
+                  <div><strong>Мучнистая роса:</strong> обработать раствором коллоидной серы (3 г/л) или биофунгицидом «Фитоспорин». Повторить через 7 дней.</div>
+                </div>
+                <div class="rec-item">
+                  <span class="rec-icon">🪴</span>
+                  <div><strong>Тля:</strong> промыть листья мыльным раствором, установить жёлтые клеевые ловушки. При массовом поражении — акарицид.</div>
+                </div>
+                <div class="rec-item">
+                  <span class="rec-icon">⚗️</span>
+                  <div><strong>Хлороз:</strong> добавить хелат железа в поливочный раствор (2 мл/л). Проверить уровень pH: должен быть 6.0–6.5.</div>
+                </div>
+                <div class="rec-item">
+                  <span class="rec-icon">🌡️</span>
+                  <div><strong>Профилактика:</strong> поддерживать влажность 60–70%, проветривать теплицу, не допускать конденсата на листьях.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sub-card">
+              <h3>📋 История обработки</h3>
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Дата</th>
+                    <th>Заболевание</th>
+                    <th>Зона</th>
+                    <th>Обработка</th>
+                    <th>Статус</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>12.07.2025</td>
+                    <td>Серая гниль</td>
+                    <td>Стеллаж B</td>
+                    <td>Фитоспорин, удаление листьев</td>
+                    <td class="status-done">Выполнено</td>
+                  </tr>
+                  <tr>
+                    <td>05.07.2025</td>
+                    <td>Паутинный клещ</td>
+                    <td>Стеллаж C</td>
+                    <td>Акарицид «Актофит»</td>
+                    <td class="status-done">Выполнено</td>
+                  </tr>
+                  <tr>
+                    <td>28.06.2025</td>
+                    <td>Тля</td>
+                    <td>Стеллаж A</td>
+                    <td>Мыльный раствор</td>
+                    <td class="status-done">Выполнено</td>
+                  </tr>
+                  <tr>
+                    <td>Сегодня</td>
+                    <td>Мучнистая роса</td>
+                    <td>Стеллаж B</td>
+                    <td>Коллоидная сера</td>
+                    <td class="status-pending">В процессе</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /content -->
+
+      <!-- CAMERAS -->
+      <div class="cameras-section">
+        <div class="cameras-header"><h2>Камеры с разных полок</h2></div>
+        <div class="cameras-layout">
+          <div class="cameras-main">
+            <div class="cameras-grid" id="camerasGrid"></div>
+          </div>
+          <div class="cameras-side">
+            <h3>Дополнительная информация</h3>
+            <div class="side-item">Последнее обновление: сейчас</div>
+            <div class="side-item">Разрешение: 1920×1080</div>
+            <div class="side-item">Статус: все камеры активны</div>
+            <div class="side-item">Архив записей: 7 дней</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /app -->
+
+  <!-- MODAL — добавить полку -->
+  <div class="modal-overlay" id="addShelfModal">
+    <div class="modal">
+      <h3>➕ Добавить новую полку</h3>
+      <div class="form-group">
+        <label>Название стеллажа</label>
+        <input type="text" id="newShelfName" placeholder="Например: Стеллаж D">
+      </div>
+      <div class="form-group">
+        <label>Ярус</label>
+        <select id="newShelfTier">
+          <option value="верхний ярус">Верхний ярус</option>
+          <option value="средний ярус">Средний ярус</option>
+          <option value="нижний ярус">Нижний ярус</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Культуры</label>
+        <input type="text" id="newShelfCrops" placeholder="Например: томаты, перец">
+      </div>
+      <div class="form-group">
+        <label>Статус</label>
+        <select id="newShelfStatus">
+          <option value="success">Хорошо</option>
+          <option value="warning">Требует внимания</option>
+          <option value="danger">Критично</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelShelfBtn">Отмена</button>
+        <button class="btn-confirm" id="confirmShelfBtn">Добавить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ════════════════════════════════════════
+       GUARD — редирект если не авторизован
+    ════════════════════════════════════════ */
+    const currentUser = sessionStorage.getItem('greeneye_user');
+    if (!currentUser) {
+      window.location.replace('login.html');
+    }
+
+    /* Показываем страницу плавно */
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('sidebarUser').textContent = '👤 ' + currentUser;
+      requestAnimationFrame(() => document.body.classList.add('ready'));
+    });
+
+    /* ════════════════════════════════════════
+       LOGOUT
+    ════════════════════════════════════════ */
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('greeneye_user');
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.4s ease';
+      setTimeout(() => window.location.href = 'login.html', 400);
+    });
+
+    /* ════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════ */
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.section');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.getAttribute('data-section');
+        sections.forEach(s => s.classList.remove('active-section'));
+        document.getElementById(id).classList.add('active-section');
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        if (window.innerWidth <= 768) closeSidebar();
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* ════════════════════════════════════════
+       HAMBURGER
+    ════════════════════════════════════════ */
+    const sidebar        = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    function openSidebar()  { sidebar.classList.add('open');    sidebarOverlay.classList.add('active'); }
+    function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('active'); }
+
+    document.getElementById('hamburgerBtn').addEventListener('click', () =>
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar()
+    );
+
+    sidebarOverlay.addEventListener('click', closeSidebar);
+    window.addEventListener('resize', () => { if (window.innerWidth > 768) closeSidebar(); });
+
+    /* ════════════════════════════════════════
+       WATER TOGGLE
+    ════════════════════════════════════════ */
+    const waterSwitch = document.getElementById('waterSwitch');
+    const waterState  = document.getElementById('waterState');
+    waterSwitch.addEventListener('change', () => {
+      waterState.textContent = waterSwitch.checked ? 'Включён' : 'Отключён';
+    });
+
+    /* ════════════════════════════════════════
+       SHELVES
+    ════════════════════════════════════════ */
+    let shelves = [
+      { id: 1, name: 'Стеллаж A', tier: 'верхний ярус', temp: '23.8°C', hum: '62%', crops: 'базилик, мята',  status: 'success', label: 'хорошо' },
+      { id: 2, name: 'Стеллаж B', tier: 'средний ярус', temp: '26.1°C', hum: '71%', crops: 'салат, руккола', status: 'warning', label: 'влажность повышена' },
+      { id: 3, name: 'Стеллаж C', tier: 'нижний ярус',  temp: '21.9°C', hum: '58%', crops: 'земляника',      status: 'success', label: 'норма' },
+    ];
+    let nextId = 4;
+
+    function renderShelves() {
+      const list = document.getElementById('shelvesList');
+      list.innerHTML = '';
+      shelves.forEach(sh => {
+        const row = document.createElement('div');
+        row.className = 'shelf-row';
+        row.innerHTML = `
+          <div>
+            <div class="shelf-title">${sh.name} • ${sh.tier}</div>
+            <div class="shelf-meta">
+              <span>${sh.temp}</span><span>${sh.hum}</span><span>${sh.crops}</span>
+            </div>
+          </div>
+          <div class="shelf-actions">
+            <div class="badge badge-${sh.status}">${sh.label}</div>
+            <button class="delete-btn" data-id="${sh.id}">✕ удалить</button>
+          </div>`;
+        list.appendChild(row);
+      });
+
+      list.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          shelves = shelves.filter(s => s.id !== parseInt(btn.dataset.id));
+          renderShelves();
+          syncCameras();
+        });
+      });
+    }
+
+    function syncCameras() {
+      const grid = document.getElementById('camerasGrid');
+      grid.innerHTML = '';
+      shelves.forEach((sh, i) => {
+        const card = document.createElement('div');
+        card.className = 'camera-card';
+        card.innerHTML = `
+          <div class="camera-preview">Камера ${i + 1}</div>
+          <div class="camera-title">${sh.name}, ${sh.tier}</div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    renderShelves();
+    syncCameras();
+
+    /* ── Modal ── */
+    const addShelfModal   = document.getElementById('addShelfModal');
+    const cancelShelfBtn  = document.getElementById('cancelShelfBtn');
+    const confirmShelfBtn = document.getElementById('confirmShelfBtn');
+
+    document.getElementById('addShelfBtn').addEventListener('click', () => addShelfModal.classList.add('open'));
+    cancelShelfBtn.addEventListener('click', closeModal);
+    addShelfModal.addEventListener('click', e => { if (e.target === addShelfModal) closeModal(); });
+
+    function closeModal() {
+      addShelfModal.classList.remove('open');
+      document.getElementById('newShelfName').value  = '';
+      document.getElementById('newShelfCrops').value = '';
+    }
+
+    confirmShelfBtn.addEventListener('click', () => {
+      const name   = document.getElementById('newShelfName').value.trim();
+      const tier   = document.getElementById('newShelfTier').value;
+      const crops  = document.getElementById('newShelfCrops').value.trim() || '—';
+      const status = document.getElementById('newShelfStatus').value;
+      if (!name) { document.getElementById('newShelfName').focus(); return; }
+
+      const labels = { success: 'хорошо', warning: 'требует внимания', danger: 'критично' };
+      shelves.push({
+        id: nextId++, name, tier,
+        temp: (20 + Math.random() * 8).toFixed(1) + '°C',
+        hum:  (50 + Math.floor(Math.random() * 30)) + '%',
+        crops, status, label: labels[status]
+      });
+
+      renderShelves();
+      syncCameras();
+      closeModal();
+      document.querySelector('[data-section="shelves"]').click();
+    });
+
+    /* ════════════════════════════════════════
+       LIGHT
+    ════════════════════════════════════════ */
+    function updateIntensity(range) {
+      range.nextElementSibling.textContent = range.value + '%';
+    }
+
+    document.getElementById('addLightSched').addEventListener('click', () => {
+      const from  = document.getElementById('lsFrom').value;
+      const to    = document.getElementById('lsTo').value;
+      const label = document.getElementById('lsLabel').value.trim();
+      if (!from || !to || !label) return;
+      const row = document.createElement('div');
+      row.className = 'light-sched-row';
+      row.innerHTML = `
+        <span class="ls-time">${from} – ${to}</span>
+        <span class="ls-label">${label}</span>
+        <span class="badge badge-warning">ожидание</span>`;
+      document.getElementById('lightScheduleList').appendChild(row);
+      document.getElementById('lsLabel').value = '';
+    });
+
+    const modeDescriptions = {
+      auto:     '<strong>Авто:</strong> ИИ подбирает оптимальный режим на основе данных датчиков и фазы роста растений.',
+      veg:      '<strong>Вегетация:</strong> 18 ч света / 6 ч темноты. Спектр смещён в синюю зону (440–470 нм) для роста зелёной массы.',
+      bloom:    '<strong>Цветение:</strong> 12 ч / 12 ч. Красный спектр (620–680 нм) стимулирует цветение и плодоношение.',
+      seedling: '<strong>Рассада:</strong> мягкий свет 16 ч, интенсивность 40–60%. Полный спектр для равномерного развития.',
+      night:    '<strong>Ночь:</strong> освещение отключено. Растения отдыхают, активизируется корневая система.',
+      manual:   '<strong>Вручную:</strong> используйте ползунки интенсивности и график для ручной настройки.',
+    };
+
+    document.getElementById('modeGrid').addEventListener('click', e => {
+      const btn = e.target.closest('.mode-btn');
+      if (!btn) return;
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('modeDesc').innerHTML = modeDescriptions[btn.dataset.mode] || '';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GreenEye AI — Вход</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: #d6d6d6;
+    }
+
+    #login-page {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      transition: opacity 0.5s ease;
+    }
+
+    #login-page.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ── Left panel ── */
+    .left-panel {
+      position: relative;
+      flex: 1;
+      background: url('hydroponic-bg.jpg') center/cover no-repeat;
+      overflow: hidden;
+    }
+
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.08) 100%);
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 2.5rem 2.8rem;
+    }
+
+    .brand-title {
+      font-size: clamp(1.8rem, 4vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    .brand-title span { color: #95ff01; }
+
+    .brand-sub {
+      font-size: clamp(0.9rem, 2vw, 1.25rem);
+      color: rgba(255,255,255,0.88);
+      margin-top: 0.5rem;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+    }
+
+    .icon-row { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+
+    .icon-box {
+      width: clamp(48px, 6vw, 64px);
+      height: clamp(48px, 6vw, 64px);
+      border: 2px solid rgba(107,140,62,0.85);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── Right panel ── */
+    .right-panel-login {
+      width: clamp(300px, 35vw, 420px);
+      background: #e8e8e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .form-group label {
+      font-size: 0.82rem;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .form-group input {
+      background: #f0f0f0;
+      border: 1.5px solid #ddd;
+      border-radius: 14px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.97rem;
+      font-family: 'Inter', sans-serif;
+      color: #222;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus {
+      border-color: #7a9e3f;
+      box-shadow: 0 0 0 3px rgba(122,158,63,0.15);
+    }
+
+    .btn-enter {
+      margin-top: 0.3rem;
+      background: #7a9e3f;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-enter:hover  { background: #6b8c35; }
+    .btn-enter:active { transform: scale(0.98); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ccc;
+    }
+
+    /* Preview cards */
+    .sensor-preview {
+      background: #f0f0f0;
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sensor-preview .sp-label { font-size: 1rem; font-weight: 600; color: #222; }
+    .sensor-preview .sp-sub   { font-size: 0.75rem; color: #888; margin-top: 2px; }
+    .sensor-preview .sp-val   { font-size: 1.25rem; font-weight: 700; color: #7a9e3f; }
+
+    .toggle-preview {
+      background: #f0f0f0;
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-preview .tp-label { font-size: 1rem; font-weight: 600; color: #222; }
+    .toggle-preview .tp-sub   { font-size: 0.75rem; color: #888; margin-top: 2px; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .switch .slider {
+      position: absolute;
+      inset: 0;
+      background: #7a9e3f;
+      border-radius: 34px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+
+    .switch .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.25s;
+    }
+
+    .switch input:not(:checked) + .slider           { background: #bbb; }
+    .switch input:checked       + .slider::before   { transform: translateX(22px); }
+
+    .diseases-preview {
+      background: #f0f0f0;
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .diseases-preview .dp-label { font-size: 1rem; font-weight: 600; color: #222; }
+    .diseases-preview .dp-sub   { font-size: 0.75rem; color: #888; margin-top: 2px; }
+
+    .disease-bars { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+    .disease-bar  { height: 8px; border-radius: 4px; }
+
+    .error-msg {
+      background: #ffe4e4;
+      color: #c0392b;
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      body { overflow: auto; }
+      #login-page       { flex-direction: column; height: auto; min-height: 100vh; }
+      .left-panel       { flex: none; height: 200px; }
+      .left-content     { padding: 1.4rem 1.6rem; }
+      .right-panel-login{ width: 100%; padding: 1.5rem 1.2rem 2rem; }
+      .icon-row         { display: none; }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .left-panel        { flex: 0 0 42%; }
+      .right-panel-login { width: 58%; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="login-page">
+
+  <!-- Left hero -->
+  <div class="left-panel">
+    <div class="left-content">
+      <div>
+        <div class="brand-title">Welcome to<br><span>GreenEye AI</span></div>
+        <div class="brand-sub">Your AI gardener</div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Right form -->
+  <div class="right-panel-login">
+    <div class="login-card">
+
+      <div class="form-group">
+        <label>Email or Nickname</label>
+        <input type="text" id="usernameInput" autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label>Key</label>
+        <input type="password" id="keyInput" autocomplete="off" />
+      </div>
+
+      <div class="error-msg" id="errorMsg">
+        Incorrect username or key. Please try again.
+      </div>
+
+      <button class="btn-enter" id="loginBtn">Enter dashboard</button>
+
+      <div class="divider">Forgot Key?</div>
+
+      <!-- Preview cards -->
+      <div class="sensor-preview">
+        <div>
+          <div class="sp-label">Temperature</div>
+          <div class="sp-sub">Optimally 18–23 °C</div>
+        </div>
+        <div class="sp-val">24.6 °C</div>
+      </div>
+
+      <div class="toggle-preview">
+        <div>
+          <div class="tp-label">Turn on the water</div>
+          <div class="tp-sub">Control water supply time</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="diseases-preview">
+        <div>
+          <div class="dp-label">Diseases</div>
+          <div class="dp-sub">Learn about diseases earlier</div>
+        </div>
+        <div class="disease-bars">
+          <div class="disease-bar" style="width:80px; background:#a8d47e;"></div>
+          <div class="disease-bar" style="width:56px; background:#f0d060;"></div>
+          <div class="disease-bar" style="width:38px; background:#e86060;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const VALID_USER = 'shubeeeert';
+  const VALID_KEY  = '12345';
+
+  const loginBtn = document.getElementById('loginBtn');
+  const errorMsg = document.getElementById('errorMsg');
+
+  function attemptLogin() {
+    const user = document.getElementById('usernameInput').value.trim();
+    const key  = document.getElementById('keyInput').value.trim();
+
+    if (user === VALID_USER && key === VALID_KEY) {
+      errorMsg.classList.remove('visible');
+
+      /* Сохраняем имя пользователя для дашборда */
+      sessionStorage.setItem('greeneye_user', user);
+
+      /* Плавное исчезновение → переход */
+      document.getElementById('login-page').classList.add('hidden');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 500);
+
+    } else {
+      errorMsg.classList.add('visible');
+      document.getElementById('keyInput').value = '';
+      document.getElementById('keyInput').focus();
+    }
+  }
+
+  loginBtn.addEventListener('click', attemptLogin);
+
+  ['usernameInput', 'keyInput'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') attemptLogin();
+    });
+  });
+</script>
+</body>
+</html>
